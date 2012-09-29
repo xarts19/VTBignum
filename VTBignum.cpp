@@ -24,6 +24,7 @@ VTBignum VTBignum::fromByteArray(const unsigned char* bytes, int size, int sign)
 {
     VTBignum bignum;
     bignum._sign = ( sign == 0 ? 0 : 1 );
+    bignum._chunks.reserve(size);
 
     for (int i = 0; i < size; ++i)
     {
@@ -390,7 +391,7 @@ std::string VTBignum::print(const VTBignum& source, int base)
     return res;
 }
 
-void VTBignum::swap(VTBignum& first, VTBignum& second)
+void swap(VTBignum& first, VTBignum& second)
 {
     std::swap(first._sign, second._sign); 
     std::swap(first._chunks, second._chunks);
