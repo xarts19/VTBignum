@@ -252,6 +252,30 @@ const VTBignum VTBignum::operator*(const VTBignum &other) const
     return VTBignum(*this) *= other;
 }
 
+VTBignum& VTBignum::operator++() // prefix
+{
+    return this->operator+=(fromInt(1));
+}
+
+VTBignum VTBignum::operator++(int unused) // postfix
+{
+    VTBignum saved = *this;
+    this->operator++();
+    return saved;
+}
+
+VTBignum& VTBignum::operator--() // prefix
+{
+    return this->operator-=(fromInt(1));
+}
+
+VTBignum VTBignum::operator--(int unused) // postfix
+{
+    VTBignum saved = *this;
+    this->operator--();
+    return saved;
+}
+
 bool VTBignum::operator==(const VTBignum& other) const
 {
     return ( this->_sign == other._sign && this->_chunks == other._chunks );
@@ -420,8 +444,10 @@ std::string VTBignum::print(const VTBignum& source, int base)
     int width;
     if (base <= 16)
         width = 1;
-    else
+    else if (base <= 100)
         width = 2;
+    else
+        width = 3;
 
     std::stringstream ss;
     std::vector<unsigned char>::const_reverse_iterator digit;

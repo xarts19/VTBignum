@@ -126,6 +126,11 @@ int main(int argc, char** argv)
     assert( VTBignum::fromString( "18446744073709551616" ) 
         == VTBignum::fromInt(65536) * VTBignum::fromInt(65536) * VTBignum::fromInt(65536) * VTBignum::fromInt(65536) );
 
+    assert( ++VTBignum::fromInt(10000) == VTBignum::fromInt(10001) );
+    assert( VTBignum::fromInt(10000)++ == VTBignum::fromInt(10000) );
+    assert( --VTBignum::fromInt(10000) == VTBignum::fromInt(9999) );
+    assert( VTBignum::fromInt(10000)-- == VTBignum::fromInt(10000) );
+
     int d = 100000;
     printf("%d\n", d);
     printf("base 256: %s\n", VTBignum::fromInt(d).toString(256).c_str());

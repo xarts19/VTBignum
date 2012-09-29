@@ -60,9 +60,13 @@ public:
     /*
     VTBignum& operator/=(const VTBignum &rhs);
     const VTBignum operator/(const VTBignum &other) const;
-    VTBignum& VTBignum::operator++() // prefix
-    VTBignum VTBignum::operator++(int unused) // postfix
+    
     */
+
+    VTBignum& VTBignum::operator++(); // prefix
+    VTBignum VTBignum::operator++(int unused); // postfix
+    VTBignum& VTBignum::operator--(); // prefix
+    VTBignum VTBignum::operator--(int unused); // postfix
 
     bool operator==(const VTBignum& other) const;
     bool operator!=(const VTBignum& other) const;
