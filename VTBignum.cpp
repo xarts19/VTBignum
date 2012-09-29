@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <assert.h>
 #include <math.h>
+#include <exception>
 
 VTBignum::VTBignum(): _sign(0), _chunks()
 {}
@@ -39,11 +40,6 @@ VTBignum VTBignum::fromInt(int value)
     return fromLongLong(value);
 }
 
-VTBignum VTBignum::fromLong(long value)
-{
-    return fromLongLong(value);
-}
-
 VTBignum VTBignum::fromLongLong(long long value)
 {
     VTBignum bignum;
@@ -60,6 +56,36 @@ VTBignum VTBignum::fromLongLong(long long value)
     return bignum;
 }
 
+VTBignum VTBignum::fromString(const char* char_array, int size, Base base)
+{
+    assert(base == Base_10 || base == Base_16);
+    VTBignum bignum;
+
+    int i = 0;
+    char sign = 0;
+    if (char_array[i] == '-')
+    {
+        sign = 1;
+        ++i;
+    }
+    else if (char_array[i] == '+')
+    {
+        sign = 0;
+        ++i;
+    }
+
+    for ( /* none */; char_array[i] != '\0' && i < size; ++i)
+    {
+        if ( char_array[i] < '0' || char_array[i] > (base == Base_10 ? '9' : 'f') )
+            throw std::runtime_error("Wrong character in number");
+
+        bignum = (bignum * fromInt(base)) + fromInt(char_array[i] - '0');
+    }
+
+    bignum._sign = sign;
+    return bignum;
+}
+
 char VTBignum::toByteArray(unsigned char* bytes) const
 {
     for (int i = 0; i < size(); ++i)
@@ -67,6 +93,27 @@ char VTBignum::toByteArray(unsigned char* bytes) const
         bytes[i] = _chunks[i];
     }
     return _sign;
+}
+
+long long VTBignum::toLongLong() const
+{
+    if (size() > sizeof(long long))
+        throw std::runtime_error("Number is too big for long long");
+    else if (size() == sizeof(long long) && _chunks[size()-1] & 0x80) // one bit is needed for sign in signed long long
+        throw std::runtime_error("Number is too big for long long");
+
+    long long result = 0;
+    std::vector<unsigned char>::const_reverse_iterator pdigit;
+    for (pdigit = _chunks.rbegin(); pdigit != _chunks.rend(); ++pdigit)
+    {
+        result *= 256;
+        result += *pdigit;
+    }
+
+    if (_sign == 1)
+        result *= -1;
+
+    return result;
 }
 
 std::string VTBignum::toString(int base) const
@@ -380,7 +427,7 @@ std::string VTBignum::print(const VTBignum& source, int base)
     std::vector<unsigned char>::const_reverse_iterator digit;
     for (digit = source._chunks.rbegin(); digit != source._chunks.rend(); ++digit)
     {
-        ss << ( width == 1 ? std::hex : std::dec ) << std::setw(width) << static_cast<int>(*digit) << ( width > 1 ? "," : "" );
+        ss << ( width == 1 || base == 256 ? std::hex : std::dec ) << std::setw(width) << static_cast<int>(*digit) << ( width > 1 ? "," : "" );
     }
 
     std::string res = ss.str();

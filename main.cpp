@@ -101,6 +101,31 @@ int main(int argc, char** argv)
     test_mult(500, 0, 0);
     test_mult(0, 0, 0);
 
+    long long a = 2147483647;
+    a += 1;
+    a *= a;
+    a *= 2;
+    a -= 1;
+
+    VTBignum res1 = VTBignum::fromLongLong(2147483647) + VTBignum::fromInt(1);
+    VTBignum res = res1 * res1 * VTBignum::fromInt(2) - VTBignum::fromInt(1);
+    long long b = res.toLongLong();
+
+    assert(a == b);
+    assert( VTBignum::fromLongLong(-2147483647).toLongLong() == -2147483647 );
+    assert( VTBignum::fromLongLong(0).toLongLong() == 0 );
+
+    assert( VTBignum::fromString( "123" ) == VTBignum::fromLongLong(123) );
+    assert( VTBignum::fromString( "+12345678" ) == VTBignum::fromLongLong(12345678) );
+
+    VTBignum frstr = VTBignum::fromString( "-12345678" );
+    VTBignum frll = VTBignum::fromLongLong(-12345678);
+    assert( VTBignum::fromString( "-12345678" ) == VTBignum::fromLongLong(-12345678) );
+
+    // 2^64 == 2^16 * 2^16 * 2^16 * 2^16
+    assert( VTBignum::fromString( "18446744073709551616" ) 
+        == VTBignum::fromInt(65536) * VTBignum::fromInt(65536) * VTBignum::fromInt(65536) * VTBignum::fromInt(65536) );
+
     int d = 100000;
     printf("%d\n", d);
     printf("base 256: %s\n", VTBignum::fromInt(d).toString(256).c_str());
