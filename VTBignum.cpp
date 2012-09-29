@@ -353,8 +353,9 @@ VTBignum VTBignum::complement(const VTBignum& bignum, int size, int base)
     // preserve original sign
     new_bignum._sign = bignum._sign;
 
-    for (int i = 0; i < bignum.size(); ++i)
-        new_bignum._chunks.push_back( base - 1 - bignum._chunks[i] );
+    std::vector<unsigned char>::const_iterator pdigit;
+    for (pdigit = bignum._chunks.begin(); pdigit != bignum._chunks.end(); ++pdigit)
+        new_bignum._chunks.push_back( base - 1 - *pdigit );
 
     // fill missing size with max digit in current base
     // (just like when shifting right negative binary two's complement numbers)

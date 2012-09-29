@@ -57,6 +57,8 @@ int main(int argc, char** argv)
 
     assert(bignum_result == bignum_result2);
 
+    assert( VTBignum::fromInt(0) == VTBignum() );
+
     assert( VTBignum::fromInt(-20000) < VTBignum::fromInt(20000) );
     assert( VTBignum::fromInt(20000) < VTBignum::fromInt(-20000) == false );
     assert( VTBignum::fromInt(20000) < VTBignum::fromInt(20000) == false );
@@ -74,6 +76,8 @@ int main(int argc, char** argv)
     test_plus(-495, 495, 0);
     test_plus(495, -495, 0);
     test_plus(0, 0, 0);
+    test_plus(0, 1234, 1234);
+    test_plus(123, 0, 123);
 
     test_minus(515, 495, 20);
     test_minus(495, 515, -20);
@@ -84,6 +88,8 @@ int main(int argc, char** argv)
     test_minus(515, 515, 0);
     test_minus(-515, -515, 0);
     test_minus(0, 0, 0);
+    test_minus(0, 1234, -1234);
+    test_minus(123, 0, 123);
 
     test_mult(500, 500, 250000);
     test_mult(500, -500, -250000);
