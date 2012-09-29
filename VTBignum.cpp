@@ -20,12 +20,6 @@ VTBignum& VTBignum::operator=(VTBignum rhs)
 VTBignum::~VTBignum(void)
 {}
 
-void VTBignum::swap(VTBignum& first, VTBignum& second)
-{
-    std::swap(first._sign, second._sign); 
-    std::swap(first._chunks, second._chunks);
-}
-
 VTBignum VTBignum::fromByteArray(const unsigned char* bytes, int size, int sign)
 {
     VTBignum bignum;
@@ -394,4 +388,10 @@ std::string VTBignum::print(const VTBignum& source, int base)
         res.erase(res.size()-1);
 
     return res;
+}
+
+void VTBignum::swap(VTBignum& first, VTBignum& second)
+{
+    std::swap(first._sign, second._sign); 
+    std::swap(first._chunks, second._chunks);
 }
