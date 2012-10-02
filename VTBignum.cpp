@@ -37,6 +37,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 VTBignum::VTBignum(): _sign(0), _chunks()
 {}
 
+VTBignum::VTBignum(long long val): _sign(0), _chunks()
+{
+    *this = fromLongLong(val);
+}
+
 VTBignum::VTBignum(const VTBignum& other): _sign(other._sign), _chunks(other._chunks)
 {}
 
@@ -148,7 +153,7 @@ std::string VTBignum::toString(int base) const
 {
     assert(base > 1 && base <= 256);
 
-    if (base == 256)
+    if (base == 256 || base == 16)
         return print(*this, base);
 
     VTBignum dest;
@@ -278,6 +283,28 @@ VTBignum& VTBignum::operator*=(const VTBignum &rhs)
 const VTBignum VTBignum::operator*(const VTBignum &other) const
 {
     return VTBignum(*this) *= other;
+}
+
+VTBignum& VTBignum::pow(unsigned long long power)
+{
+    VTBignum aux = VTBignum::fromInt(1);
+
+    while (power > 0)
+    {
+        if (power & 1)      //odd
+        {
+            aux *= *this;
+            if (power == 1)
+            {
+                *this = aux;
+                return *this;
+            }
+        }
+        *this *= *this;
+        power /= 2;
+    }
+
+    return *this;
 }
 
 VTBignum& VTBignum::operator++() // prefix
@@ -461,6 +488,7 @@ VTBignum VTBignum::complement(const VTBignum& bignum, int size, int base)
 
 void VTBignum::normilize()
 {
+    if (size() == 0) return;
     while (_chunks[size()-1] == 0)
         _chunks.pop_back();
 }
@@ -468,6 +496,9 @@ void VTBignum::normilize()
 std::string VTBignum::print(const VTBignum& source, int base)
 {
     assert(base > 1 && base <= 256);
+
+    if (source.size() == 0)
+        return std::string("0");
 
     int width;
     if (base <= 16)
@@ -481,7 +512,14 @@ std::string VTBignum::print(const VTBignum& source, int base)
     std::vector<unsigned char>::const_reverse_iterator digit;
     for (digit = source._chunks.rbegin(); digit != source._chunks.rend(); ++digit)
     {
-        ss << ( width == 1 || base == 256 ? std::hex : std::dec ) << std::setw(width) << static_cast<int>(*digit) << ( width > 1 ? "," : "" );
+        ss << ( width == 1 || base == 256 ? std::hex : std::dec ) << std::setw(width);
+        if (base == 16)
+        {
+            unsigned char a = *digit;
+            ss << static_cast<int>((*digit & 0xf0) >> 4) << static_cast<int>(*digit & 0x0f);
+        }
+        else
+            ss << static_cast<int>(*digit) << ( width > 1 ? "," : "" );
     }
 
     std::string res = ss.str();

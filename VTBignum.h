@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string>
 
 #define MAX_STRING 8192
+
 /*
     Class for handling arbitrary precision integers.
 
@@ -43,6 +44,7 @@ public:
     enum Base {Base_10 = 10, Base_16 = 16, Base_256 = 256};
 
     VTBignum();
+    VTBignum(long long val);
     VTBignum(const VTBignum& other);
     VTBignum& operator=(VTBignum rhs);
     ~VTBignum();
@@ -89,7 +91,11 @@ public:
     VTBignum& operator/=(const VTBignum &rhs);
     const VTBignum operator/(const VTBignum &other) const;
     
+
+    VTBignum pow_modulo(const VTBignum& power, const VTBignum& mod);
     */
+
+    VTBignum& pow(unsigned long long power);
 
     VTBignum& VTBignum::operator++(); // prefix
     VTBignum VTBignum::operator++(int unused); // postfix

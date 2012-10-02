@@ -61,6 +61,14 @@ void test_mult(long long a, long long b, long long c)
     assert(vtab == vtc);
 }
 
+VTBignum factorial(long long value)
+{
+    VTBignum res = 1;
+    for (long long i = 1; i <= value; ++i)
+        res *= VTBignum::fromLongLong(i);
+    return res;
+}
+
 // test cases
 int main(int argc, char** argv)
 {
@@ -159,6 +167,9 @@ int main(int argc, char** argv)
     assert( --VTBignum::fromInt(10000) == VTBignum::fromInt(9999) );
     assert( VTBignum::fromInt(10000)-- == VTBignum::fromInt(10000) );
 
+    VTBignum pow10 = VTBignum::fromInt(2).pow(10);
+    assert( pow10 == VTBignum::fromInt(1024) );
+
     int d = 100000;
     printf("%d\n", d);
     printf("base 256: %s\n", VTBignum::fromInt(d).toString(256).c_str());
@@ -166,6 +177,13 @@ int main(int argc, char** argv)
     printf("base  16: %s\n", VTBignum::fromInt(d).toString(16).c_str());
     printf("base  25: %s\n", VTBignum::fromInt(d).toString(35).c_str());
     printf("All good\n");
+    
+    
+
+    long long fact = 100000;
+    VTBignum factbig = factorial(fact);
+    printf("Factorial %lld size: %d\n", fact, factbig.size());
+
     getchar();
     return 0;
 }
