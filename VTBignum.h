@@ -44,7 +44,6 @@ public:
     enum Base {Base_10 = 10, Base_16 = 16, Base_256 = 256};
 
     VTBignum();
-    VTBignum(long long val);
     VTBignum(const VTBignum& other);
     VTBignum& operator=(VTBignum rhs);
     ~VTBignum();
@@ -114,6 +113,8 @@ public:
     friend bool operator!(const VTBignum &bignum);
  
 private:
+    static VTBignum create_empty();
+
     inline void invert() { _sign = !_sign; }
     void normilize();
 

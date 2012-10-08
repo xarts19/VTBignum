@@ -35,11 +35,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <exception>
 
 VTBignum::VTBignum(): _sign(0), _chunks()
-{}
-
-VTBignum::VTBignum(long long val): _sign(0), _chunks()
 {
-    *this = fromLongLong(val);
+    _chunks.push_back(0);
 }
 
 VTBignum::VTBignum(const VTBignum& other): _sign(other._sign), _chunks(other._chunks)
@@ -56,7 +53,7 @@ VTBignum::~VTBignum(void)
 
 VTBignum VTBignum::fromByteArray(const unsigned char* bytes, int size, int sign)
 {
-    VTBignum bignum;
+    VTBignum bignum = create_empty();
     bignum._sign = ( sign == 0 ? 0 : 1 );
     bignum._chunks.reserve(size);
 
@@ -75,8 +72,11 @@ VTBignum VTBignum::fromInt(int value)
 
 VTBignum VTBignum::fromLongLong(long long value)
 {
-    VTBignum bignum;
-    bignum._chunks.clear();
+    if (value == 0)
+        return VTBignum();
+
+    VTBignum bignum = create_empty();
+
     bignum._sign = (value < 0 ? 1 : 0);
     long long overflow = (value < 0 ? -value : value);
 
@@ -92,7 +92,7 @@ VTBignum VTBignum::fromLongLong(long long value)
 VTBignum VTBignum::fromString(const char* char_array, int size, Base base)
 {
     assert(base == Base_10 || base == Base_16);
-    VTBignum bignum;
+    VTBignum bignum = create_empty();
 
     int i = 0;
     char sign = 0;
@@ -156,7 +156,7 @@ std::string VTBignum::toString(int base) const
     if (base == 256 || base == 16)
         return print(*this, base);
 
-    VTBignum dest;
+    VTBignum dest = create_empty();
 
     // size needed to hold this number in given base
     while ( dest.size() < ceil( size() * log(static_cast<double>(256))/log(static_cast<double>(base)) ) )
@@ -381,6 +381,12 @@ bool operator!(const VTBignum &bignum)
 
 // PRIVATE FUNCTIONS
 
+VTBignum VTBignum::create_empty()
+{
+    VTBignum bignum;
+    bignum._chunks.clear();
+    return bignum;
+}
 
 void VTBignum::add_no_sign(const VTBignum& rhs, int base)
 {
@@ -469,7 +475,7 @@ VTBignum VTBignum::complement(const VTBignum& bignum, int size, int base)
     assert(size >= bignum.size());
     assert(base > 1 && base <= 256);
 
-    VTBignum new_bignum;
+    VTBignum new_bignum = create_empty();
 
     // preserve original sign
     new_bignum._sign = bignum._sign;

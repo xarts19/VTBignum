@@ -63,7 +63,7 @@ void test_mult(long long a, long long b, long long c)
 
 VTBignum factorial(long long value)
 {
-    VTBignum res = 1;
+    VTBignum res = VTBignum::fromInt(1);
     for (long long i = 1; i <= value; ++i)
         res *= VTBignum::fromLongLong(i);
     return res;
@@ -180,7 +180,7 @@ int main(int argc, char** argv)
     
     
 
-    long long fact = 100000;
+    long long fact = 1000;
     VTBignum factbig = factorial(fact);
     printf("Factorial %lld size: %d\n", fact, factbig.size());
 
